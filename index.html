@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso Sistema de Prensa - Liga de Fútbol del Partido de la Costa</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #003366;
+            background-image: linear-gradient(135deg, #002244 0%, #004b87 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .login-card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+            width: 100%;
+            max-width: 450px;
+        }
+        .login-header {
+            background: #001a33;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .login-header img {
+            max-height: 80px;
+            margin-bottom: 15px;
+        }
+        .btn-liga {
+            background-color: #004b87;
+            color: white;
+            font-weight: bold;
+        }
+        .btn-liga:hover {
+            background-color: #003366;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="login-header">
+            <img src="escudos/LIGA BLANCO.png" alt="Logo Liga" onerror="this.src='https://via.placeholder.com/80?text=LIGA'">
+            <h4 class="mb-0">Acreditaciones de Prensa</h4>
+            <small class="text-white-50">Liga de Fútbol del Partido de la Costa</small>
+        </div>
+        <div class="login-body p-4">
+            <form id="loginForm" onsubmit="realizarLogin(event)">
+                <div class="mb-3">
+                    <label class="form-label fw-bold"><i class="fas fa-user-shield me-2"></i>Seleccione su Rol</label>
+                    <select class="form-select" id="rolSelect" onchange="actualizarCamposLogin()" required>
+                        <option value="" disabled selected>Elija una opción...</option>
+                        <option value="admin">Administrador de la Liga (Acceso Total)</option>
+                        <option value="arbitro">Árbitro / Veedor (Control en Cancha)</option>
+                        <option value="club">Representante de Club / Institución</option>
+                    </select>
+                </div>
+
+                <div class="mb-3" id="divClubes" style="display: none;">
+                    <label class="form-label fw-bold"><i class="fas fa-shield-alt me-2"></i>Seleccione su Institución</label>
+                    <select class="form-select" id="clubSelect">
+                        <option value="Social Mar de Ajó">Social Mar de Ajó</option>
+                        <option value="El Gran Porvenir">El Gran Porvenir</option>
+                        <option value="Cosme Argerich">Cosme Argerich</option>
+                        <option value="CADU">Defensores Unidos (CADU)</option>
+                        <option value="Fomento San Bernardo">Fomento San Bernardo</option>
+                        <option value="Social Las Toninas">Social Las Toninas</option>
+                        <option value="Popular Lavalle">Popular Lavalle</option>
+                        <option value="CAJU">CAJU</option>
+                        <option value="Defensores de Villa Clelia">Defensores de Villa Clelia</option>
+                        <option value="Mar del Tuyú">Mar del Tuyú</option>
+                        <option value="Núcleo FC">Núcleo FC</option>
+                        <option value="Las Quintas">Las Quintas</option>
+                        <option value="All Boys">All Boys</option>
+                        <option value="Social Santa Teresita">Social Santa Teresita</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold"><i class="fas fa-key me-2"></i>Clave de Acceso</label>
+                    <input type="password" class="form-control" id="passwordInput" placeholder="Ingrese clave..." required>
+                    <div class="form-text">Demo Admin (`admin123`), Árbitro (`match2026`), Club (`club123`).</div>
+                </div>
+
+                <button type="submit" class="btn btn-liga w-100 py-2 mt-2">
+                    <i class="fas fa-sign-in-alt me-2"></i>Ingresar al Sistema
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function actualizarCamposLogin() {
+            const rol = document.getElementById('rolSelect').value;
+            document.getElementById('divClubes').style.display = (rol === 'club') ? 'block' : 'none';
+        }
+
+        function realizarLogin(e) {
+            e.preventDefault();
+            const rol = document.getElementById('rolSelect').value;
+            const pass = document.getElementById('passwordInput').value;
+            const club = document.getElementById('clubSelect').value;
+
+            if (rol === 'admin' && pass !== 'admin123') { alert('Clave Admin incorrecta'); return; }
+            if (rol === 'arbitro' && pass !== 'match2026') { alert('Clave Árbitro incorrecta'); return; }
+            if (rol === 'club' && pass !== 'club123') { alert('Clave Club incorrecta'); return; }
+
+            sessionStorage.setItem('liga_rol', rol);
+            sessionStorage.setItem('liga_club', rol === 'club' ? club : 'TODOS');
+            window.location.href = 'panel.php';
+        }
+    </script>
+</body>
+</html>
