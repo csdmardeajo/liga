@@ -635,7 +635,7 @@
             const container = document.getElementById('qrcodeContainer');
             container.innerHTML = '';
             new QRCode(container, {
-                text: `http://localhost/prensaliga/verificar.php?dni=${item.dni}&nombre=${encodeURIComponent(item.nombre)}`,
+                text: `https://csdmardeajo.github.io/liga/verificar.html?dni=${item.dni}&nombre=${encodeURIComponent(item.nombre)}`,
                 width: 75, height: 75
             });
 
