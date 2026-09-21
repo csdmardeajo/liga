@@ -13,102 +13,37 @@
         .badge-habilitado { background-color: #198754; color: white; }
         .badge-suspendido { background-color: #dc3545; color: white; }
         .escudo-filtro {
-            width: 45px;
-            height: 45px;
-            object-fit: contain;
-            cursor: pointer;
-            transition: transform 0.2s, opacity 0.2s;
-            opacity: 0.6;
-            background: white;
-            border-radius: 50%;
-            padding: 4px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            width: 45px; height: 45px; object-fit: contain; cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s; opacity: 0.6;
+            background: white; border-radius: 50%; padding: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .escudo-filtro:hover, .escudo-filtro.active {
-            transform: scale(1.15);
-            opacity: 1;
-            border: 2px solid #004b87;
-        }
-        .escudos-container {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            padding-bottom: 8px;
-        }
+        .escudo-filtro:hover, .escudo-filtro.active { transform: scale(1.15); opacity: 1; border: 2px solid #004b87; }
+        .escudos-container { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px; }
 
-        /* CONTENEDOR DE CREDENCIALES */
-        .credencial-wrapper {
-            display: flex;
-            gap: 25px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
+        /* CREDENCIALES */
+        .credencial-wrapper { display: flex; gap: 25px; justify-content: center; flex-wrap: wrap; }
         .credencial-card {
-            width: 320px;
-            height: 500px;
-            position: relative;
-            background-size: cover;
-            background-position: center;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            width: 320px; height: 500px; position: relative;
+            background-size: cover; background-position: center;
+            border-radius: 12px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.25);
             font-family: 'Bebas Neue', sans-serif;
         }
+        .credencial-frente { background-image: url('credencial/frente.png'); }
+        .credencial-dorso { background-image: url('credencial/dorso.png'); }
 
-        .credencial-frente {
-            background-image: url('credencial/frente.png');
+        /* RESPONSIVE AUTOMÁTICO PARA CELULARES (ÁRBITROS) */
+        @media (max-width: 768px) {
+            .credencial-wrapper { transform: scale(0.75); transform-origin: top center; margin-bottom: -110px; }
         }
 
-        .credencial-dorso {
-            background-image: url('credencial/dorso.png');
-        }
-
-        /* REGLA DE IMPRESIÓN OPTIMIZADA */
         @media print {
-            body * {
-                visibility: hidden;
-            }
-            #modalCredencial, #modalCredencial * {
-                visibility: visible;
-            }
-            #modalCredencial {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                margin: 0;
-                padding: 0;
-                background: white !important;
-            }
-            .modal-header, .modal-footer, .btn-close {
-                display: none !important;
-            }
-            .credencial-wrapper {
-                gap: 20px;
-                justify-content: center;
-            }
-            .credencial-card {
-                box-shadow: none !important;
-                page-break-inside: avoid;
-                border: 1px solid #ccc;
-            }
+            body * { visibility: hidden; }
+            #modalCredencial, #modalCredencial * { visibility: visible; }
+            #modalCredencial { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; background: white !important; }
+            .modal-header, .modal-footer, .btn-close { display: none !important; }
+            .credencial-wrapper { transform: scale(1) !important; margin-bottom: 0 !important; gap: 20px; justify-content: center; }
+            .credencial-card { box-shadow: none !important; page-break-inside: avoid; border: 1px solid #ccc; }
         }
-
-        /* RESPONSIVE PARA CREDENCIALES EN CELULARES */
-@media (max-width: 768px) {
-    .credencial-wrapper {
-        transform: scale(0.8);
-        transform-origin: top center;
-        margin-bottom: -90px; /* Compensa el espacio del escalado */
-    }
-}
-@media (max-width: 480px) {
-    .credencial-wrapper {
-        transform: scale(0.65);
-        margin-bottom: -160px;
-    }
-}
     </style>
 </head>
 <body>
@@ -132,6 +67,32 @@
         
         <div id="bannerRestriccion" class="alert alert-info shadow-sm" role="alert">
             <i class="fas fa-info-circle me-2"></i><span id="textoRestriccion">Verificando...</span>
+        </div>
+
+        <!-- PANEL DE GESTIÓN DE REPORTES PENDIENTES (SOLO ADMIN) -->
+        <div class="card shadow-sm mb-4 border-danger" id="cardReportesAdmin" style="display: none;">
+            <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Incidentes Reportados por Árbitros (Pendientes de Sanción)</h5>
+                <span class="badge bg-light text-dark" id="badgeReportesCount">0 reportes</span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Fecha / Hora</th>
+                                <th>Acreditado</th>
+                                <th>Club</th>
+                                <th>Motivo del Árbitro</th>
+                                <th>Acción Disciplinaria</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaReportesAdmin">
+                            <tr><td colspan="5" class="text-center text-muted">No hay incidentes reportados.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
         <!-- FORMULARIO ALTA (SOLO ADMIN) -->
@@ -193,7 +154,7 @@
             </div>
         </div>
 
-        <!-- SECCIÓN FILTROS Y BUSCADOR -->
+        <!-- FILTROS Y BUSCADOR -->
         <div class="card shadow-sm mb-4">
             <div class="card-body">
                 <div class="row align-items-center g-3">
@@ -241,14 +202,12 @@
                                 <th>DNI</th>
                                 <th>Función</th>
                                 <th>Entidad / Club</th>
-                                <th>Estado</th>
-                                <th>Acciones / QR</th>
+                                <th>Estado / Sanción</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="tablaPrensa">
-                            <tr>
-                                <td colspan="7" class="text-center py-4 text-muted">Conectando a Realtime Database...</td>
-                            </tr>
+                            <tr><td colspan="7" class="text-center py-4 text-muted">Conectando a Realtime Database...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -270,9 +229,7 @@
                     <div class="credencial-wrapper">
                         <!-- FRENTE -->
                         <div class="credencial-card credencial-frente">
-                            <!-- Número correlativo abajo a la izquierda -->
                             <div style="position: absolute; bottom: 8px; left: 45px; font-size: 48px; color: #000; letter-spacing: 1px;" id="lblNumeroFrente">001</div>
-                            <!-- Escudo del club abajo -->
                             <div style="position: absolute; bottom: 0px; left: 135px; width: 55px; height: 95px; display: flex; align-items: center; justify-content: center;">
                                 <img id="imgEscudoFrente" src="escudos/social.png" style="max-width: 48px; max-height: 48px; object-fit: contain;" onerror="this.style.display='none'">
                             </div>
@@ -280,29 +237,23 @@
 
                         <!-- DORSO -->
                         <div class="credencial-card credencial-dorso">
-                            <!-- Foto carnet circular -->
                             <div style="position: absolute; top: 48px; left: 50%; transform: translateX(-50%); width: 105px; height: 105px; border-radius: 50%; overflow: hidden; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
-                                <img id="carnetFoto" src="https://via.placeholder.com/150" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://via.placeholder.com/150'">
+                                <img id="carnetFoto" src="escudos/LIGA A COLOR.png" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='escudos/LIGA A COLOR.png'">
                             </div>
 
-                            <!-- Código QR -->
                             <div style="position: absolute; top: 165px; left: 50%; transform: translateX(-50%); width: 85px; height: 85px; background: white; padding: 3px; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
                                 <div id="qrcodeContainer"></div>
                             </div>
 
-                            <!-- Valor Nombre -->
                             <div style="position: absolute; top: 285px; left: 15px; right: 25px; text-align: left;">
-                                <div style="font-size: 20px; color: #000; font-weight: bold; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="carnetNombre">FRANCISCO DEZILLIO</div>
+                                <div style="font-size: 20px; color: #000; font-weight: bold; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="carnetNombre">NOMBRE</div>
                             </div>
 
-                            <!-- Valor DNI -->
                             <div style="position: absolute; top: 340px; left: 15px; right: 25px; text-align: left;">
-                                <div style="font-size: 22px; color: #000; font-weight: bold; line-height: 1.1;" id="carnetDni">43.656.413</div>
+                                <div style="font-size: 22px; color: #000; font-weight: bold; line-height: 1.1;" id="carnetDni">DNI</div>
                             </div>
 
-                            <!-- Número correlativo abajo a la izquierda -->
                             <div style="position: absolute; bottom: 8px; left: 45px; font-size: 48px; color: #000; letter-spacing: 1px;" id="lblNumeroDorso">001</div>
-                            <!-- Escudo del club abajo -->
                             <div style="position: absolute; bottom: 0px; left: 135px; width: 55px; height: 95px; display: flex; align-items: center; justify-content: center;">
                                 <img id="imgEscudoDorso" src="escudos/social.png" style="max-width: 48px; max-height: 48px; object-fit: contain;" onerror="this.style.display='none'">
                             </div>
@@ -318,6 +269,35 @@
         </div>
     </div>
 
+    <!-- MODAL REPORTE DE INCIDENTE (ÁRBITRO) -->
+    <div class="modal fade" id="modalReporteArbitro" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title fs-6"><i class="fas fa-flag me-2"></i>Reportar Incidente de Prensa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formReporteArbitro" onsubmit="enviarReporteArbitro(event)">
+                        <input type="hidden" id="reportePrensaId">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Acreditado:</label>
+                            <input type="text" class="form-control form-control-sm" id="reporteNombrePersona" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Descripción del Incidente / Motivo de Sanción:</label>
+                            <textarea class="form-control" id="reporteMotivo" rows="4" required placeholder="Detalle la falta cometida en campo o zona de vestuarios..."></textarea>
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-danger btn-sm">Enviar Reporte a Tribunal / Admin</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts Firebase y Librerías -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -325,40 +305,34 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <script>
-        const firebaseConfig = {
-            databaseURL: "https://basemardeajo-default-rtdb.firebaseio.com"
-        };
-
-        let rtdb;
-        try {
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-            }
-            rtdb = firebase.database();
-        } catch (e) {
-            console.error("Error inicializando Firebase RTDB:", e);
-        }
+        const firebaseConfig = { databaseURL: "https://basemardeajo-default-rtdb.firebaseio.com" };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const rtdb = firebase.database();
 
         const rolActual = sessionStorage.getItem('liga_rol');
         const clubActual = sessionStorage.getItem('liga_club');
-
         if (!rolActual) { window.location.href = 'index.html'; }
 
         let listaPrensaGlobal = [];
+        let listaReportesGlobal = [];
         let filtroClubActivo = 'TODOS';
+        let itemSeleccionadoParaReporte = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             const labelUser = document.getElementById('userInfoLabel');
             const textoRestriccion = document.getElementById('textoRestriccion');
             const cardAdmin = document.getElementById('cardAdminAcciones');
+            const cardReportesAdmin = document.getElementById('cardReportesAdmin');
 
             if (rolActual === 'admin') {
                 labelUser.innerHTML = `<i class="fas fa-user-shield me-1"></i> <b>Admin Liga</b>`;
-                textoRestriccion.innerHTML = `Perfil <b>Administrador</b>: Control total.`;
+                textoRestriccion.innerHTML = `Perfil <b>Administrador</b>: Control total y gestión de sanciones por fechas.`;
                 cardAdmin.style.display = 'block';
+                cardReportesAdmin.style.display = 'block';
+                cargarReportesAdmin();
             } else if (rolActual === 'arbitro') {
                 labelUser.innerHTML = `<i class="fas fa-whistle me-1"></i> <b>Árbitro / Veedor</b>`;
-                textoRestriccion.innerHTML = `Perfil <b>Árbitro</b>: Lectura general de acreditaciones de prensa.`;
+                textoRestriccion.innerHTML = `Perfil <b>Árbitro</b>: Consulta de carnets y habilitación para reportar incidentes en cancha.`;
             } else if (rolActual === 'club') {
                 labelUser.innerHTML = `<i class="fas fa-shield-alt me-1"></i> <b>Club: ${clubActual}</b>`;
                 textoRestriccion.innerHTML = `Perfil <b>Institución</b>: Visualización exclusiva del personal de prensa de ${clubActual}.`;
@@ -395,7 +369,7 @@
 
         function convertirYComprimirImagen(fileInput, callback) {
             if (!fileInput.files || fileInput.files.length === 0) {
-                callback('https://via.placeholder.com/150');
+                callback('escudos/LIGA A COLOR.png');
                 return;
             }
             const file = fileInput.files[0];
@@ -409,65 +383,44 @@
                     const MAX_SIZE = 200;
                     let width = img.width;
                     let height = img.height;
-
                     if (width > height) {
-                        if (width > MAX_SIZE) {
-                            height *= MAX_SIZE / width;
-                            width = MAX_SIZE;
-                        }
+                        if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
                     } else {
-                        if (height > MAX_SIZE) {
-                            width *= MAX_SIZE / height;
-                            height = MAX_SIZE;
-                        }
+                        if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
                     }
-
-                    canvas.width = width;
-                    canvas.height = height;
+                    canvas.width = width; canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
-                    const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
-                    callback(dataUrl);
+                    callback(canvas.toDataURL('image/jpeg', 0.8));
                 };
             };
         }
 
         function cargarDatosRTDB() {
             const tbody = document.getElementById('tablaPrensa');
-            
-            if (rtdb) {
-                rtdb.ref('prensa_acreditaciones').on('value', (snapshot) => {
-                    listaPrensaGlobal = [];
-                    const data = snapshot.val();
-                    if (data) {
-                        Object.keys(data).forEach(key => {
-                            listaPrensaGlobal.push({ id: key, ...data[key] });
-                        });
-                    }
-                    renderizarTabla();
-                }, (err) => {
-                    console.error("Error al leer RTDB:", err);
-                    tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Error al conectar con Realtime Database.</td></tr>`;
-                });
-            } else {
-                tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">No se pudo inicializar Realtime Database.</td></tr>`;
-            }
+            rtdb.ref('prensa_acreditaciones').on('value', (snapshot) => {
+                listaPrensaGlobal = [];
+                const data = snapshot.val();
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        listaPrensaGlobal.push({ id: key, ...data[key] });
+                    });
+                }
+                renderizarTabla();
+            }, (err) => {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Error al conectar con base de datos.</td></tr>`;
+            });
         }
 
         function guardarPrensaRTDB(e) {
             e.preventDefault();
-            if (rolActual !== 'admin') {
-                alert('Acción no permitida.');
-                return;
-            }
+            if (rolActual !== 'admin') return;
 
             const btnSubmit = document.getElementById('btnSubmitCredencial');
             btnSubmit.disabled = true;
             btnSubmit.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span>Procesando foto...`;
 
-            const inputFoto = document.getElementById('fotoPrensa');
-
-            convertirYComprimirImagen(inputFoto, function(fotoBase64) {
+            convertirYComprimirImagen(document.getElementById('fotoPrensa'), function(fotoBase64) {
                 const nuevoRegistro = {
                     nombre: document.getElementById('nombrePrensa').value,
                     dni: document.getElementById('dniPrensa').value,
@@ -475,12 +428,13 @@
                     club: document.getElementById('clubPrensa').value,
                     foto: fotoBase64,
                     estado: 'HABILITADO',
+                    sancionDetalle: '',
                     createdAt: new Date().toISOString()
                 };
 
                 rtdb.ref('prensa_acreditaciones').push(nuevoRegistro)
                   .then(() => {
-                      alert('¡Credencial emitida y guardada con éxito!');
+                      alert('¡Credencial emitida con éxito!');
                       document.getElementById('formNuevaPrensa').reset();
                       btnSubmit.disabled = false;
                       btnSubmit.innerHTML = `<i class="fas fa-save me-1"></i>Emitir Credencial`;
@@ -488,56 +442,126 @@
                   .catch(err => {
                       btnSubmit.disabled = false;
                       btnSubmit.innerHTML = `<i class="fas fa-save me-1"></i>Emitir Credencial`;
-                      alert('Error al guardar: ' + err.message);
-                      console.error(err);
+                      alert('Error: ' + err.message);
                   });
             });
         }
 
+        // --- SISTEMA DE REPORTES Y SANCIONES POR SEMANAS ---
+        function abrirModalReporte(itemStr) {
+            const item = JSON.parse(itemStr);
+            itemSeleccionadoParaReporte = item;
+            document.getElementById('reportePrensaId').value = item.id;
+            document.getElementById('reporteNombrePersona').value = `${item.nombre} (DNI: ${item.dni} - ${item.club})`;
+            document.getElementById('reporteMotivo').value = '';
+            new bootstrap.Modal(document.getElementById('modalReporteArbitro')).show();
+        }
+
+        function enviarReporteArbitro(e) {
+            e.preventDefault();
+            const motivo = document.getElementById('reporteMotivo').value;
+            const reporte = {
+                prensaId: itemSeleccionadoParaReporte.id,
+                nombre: itemSeleccionadoParaReporte.nombre,
+                club: itemSeleccionadoParaReporte.club,
+                dni: itemSeleccionadoParaReporte.dni,
+                motivo: motivo,
+                fechaReporte: new Date().toLocaleString()
+            };
+
+            rtdb.ref('reportes_incidentes').push(reporte)
+              .then(() => {
+                  alert('Reporte enviado correctamente al panel del Administrador.');
+                  bootstrap.Modal.getInstance(document.getElementById('modalReporteArbitro')).hide();
+              })
+              .catch(err => alert('Error al enviar reporte: ' + err.message));
+        }
+
+        function cargarReportesAdmin() {
+            const tbody = document.getElementById('tablaReportesAdmin');
+            rtdb.ref('reportes_incidentes').on('value', snapshot => {
+                listaReportesGlobal = [];
+                const data = snapshot.val();
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        listaReportesGlobal.push({ id: key, ...data[key] });
+                    });
+                }
+                document.getElementById('badgeReportesCount').textContent = `${listaReportesGlobal.length} reportes`;
+                
+                if (listaReportesGlobal.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No hay incidentes reportados.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                listaReportesGlobal.forEach(rep => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="small text-muted">${rep.fechaReporte}</td>
+                        <td class="fw-bold">${rep.nombre}</td>
+                        <td>${rep.club}</td>
+                        <td class="small text-danger">${rep.motivo}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="aplicarSancionSemanas('${rep.id}', '${rep.prensaId}', '${rep.nombre}')"><i class="fas fa-gavel me-1"></i>Sancionar (Semanas)</button>
+                            <button class="btn btn-outline-secondary btn-sm ms-1" onclick="desestimarReporte('${rep.id}')" title="Desestimar"><i class="fas fa-times"></i></button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            });
+        }
+
+        function aplicarSancionSemanas(reporteId, prensaId, nombrePersona) {
+            const semanas = prompt(`¿Cuántas semanas (fechas) durará la suspensión para ${nombrePersona}?:`, "2");
+            if (semanas === null || semanas.trim() === "") return;
+
+            const detalleSancion = `Suspendido por ${semanas} semana(s) (Fecha de informe: ${new Date().toLocaleDateString()})`;
+
+            // Actualizar estado del carnet a SUSPENDIDO
+            rtdb.ref('prensa_acreditaciones/' + prensaId).update({
+                estado: 'SUSPENDIDO',
+                sancionDetalle: detalleSancion
+            }).then(() => {
+                // Borrar el reporte atendido
+                rtdb.ref('reportes_incidentes/' + reporteId).remove();
+                alert(`Sanción aplicada con éxito por ${semanas} semana(s). El carnet ahora figura SUSPENDIDO.`);
+            }).catch(err => alert('Error al aplicar sanción: ' + err.message));
+        }
+
+        function desestimarReporte(reporteId) {
+            if (confirm("¿Confirma desestimar este reporte sin aplicar sanciones?")) {
+                rtdb.ref('reportes_incidentes/' + reporteId).remove();
+            }
+        }
+
         function cambiarEstadoPrensa(id, nuevoEstado) {
-            if (rolActual !== 'admin') { alert('Solo el admin puede sancionar.'); return; }
+            if (rolActual !== 'admin') return;
             if (confirm(`¿Confirma cambiar estado a ${nuevoEstado}?`)) {
-                rtdb.ref('prensa_acreditaciones/' + id).update({ estado: nuevoEstado })
-                  .catch(err => alert('Error al actualizar estado: ' + err.message));
+                rtdb.ref('prensa_acreditaciones/' + id).update({ estado: nuevoEstado, sancionDetalle: '' })
+                  .catch(err => alert('Error: ' + err.message));
             }
         }
 
         function eliminarPrensa(id, nombre) {
-            if (rolActual !== 'admin') { 
-                alert('Acción restringida solo para administradores.'); 
-                return; 
-            }
-
-            const claveIngresada = prompt(`ADVERTENCIA: Está a punto de eliminar a "${nombre}" de forma permanente.\n\nIngrese la clave de administrador para confirmar:`);
-            
-            if (claveIngresada === null) return;
-
-            if (claveIngresada === "admin123" || claveIngresada === "liga2026") {
-                rtdb.ref('prensa_acreditaciones/' + id).remove()
-                  .then(() => {
-                      alert('Registro eliminado correctamente de la base de datos.');
-                  })
-                  .catch(err => {
-                      alert('Error al eliminar: ' + err.message);
-                  });
-            } else {
-                alert('Clave de administrador incorrecta. Operación cancelada.');
+            if (rolActual !== 'admin') return;
+            const clave = prompt(`ADVERTENCIA: Eliminar a "${nombre}" permanentemente.\nIngrese clave de administrador:`);
+            if (clave === "adminliga2026") {
+                rtdb.ref('prensa_acreditaciones/' + id).remove();
+            } else if (clave !== null) {
+                alert('Clave incorrecta.');
             }
         }
 
         function filtrarPorClub(club, elementoImg) {
             if (rolActual === 'club') return;
-            
             document.querySelectorAll('.escudo-filtro').forEach(el => el.classList.remove('active'));
             if(elementoImg) elementoImg.classList.add('active');
-            
             filtroClubActivo = club;
             renderizarTabla();
         }
 
-        function filtrarTablaTexto() {
-            renderizarTabla();
-        }
+        function filtrarTablaTexto() { renderizarTabla(); }
 
         function renderizarTabla() {
             const tbody = document.getElementById('tablaPrensa');
@@ -545,22 +569,16 @@
             tbody.innerHTML = '';
 
             let filtrados = listaPrensaGlobal.filter(item => {
-                if (rolActual === 'club' && item.club.toLowerCase() !== clubActual.toLowerCase()) {
-                    return false;
-                }
-                if (rolActual !== 'club' && filtroClubActivo !== 'TODOS' && item.club !== filtroClubActivo) {
-                    return false;
-                }
-                if (textoBusqueda && !item.nombre.toLowerCase().includes(textoBusqueda) && !item.dni.includes(textoBusqueda)) {
-                    return false;
-                }
+                if (rolActual === 'club' && item.club.toLowerCase() !== clubActual.toLowerCase()) return false;
+                if (rolActual !== 'club' && filtroClubActivo !== 'TODOS' && item.club !== filtroClubActivo) return false;
+                if (textoBusqueda && !item.nombre.toLowerCase().includes(textoBusqueda) && !item.dni.includes(textoBusqueda)) return false;
                 return true;
             });
 
             document.getElementById('badgeContador').textContent = `${filtrados.length} registros`;
 
             if (filtrados.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">No se encontraron acreditaciones cargadas.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">No se encontraron acreditaciones.</td></tr>`;
                 return;
             }
 
@@ -570,21 +588,29 @@
 
                 let botones = `<button class="btn btn-outline-primary btn-sm" onclick='verCarnetQR(${JSON.stringify(item)})'><i class="fas fa-qrcode me-1"></i>Ver Carnet</button>`;
                 
+                // Si es ÁRBITRO, puede reportar incidentes
+                if (rolActual === 'arbitro') {
+                    botones += ` <button class="btn btn-outline-danger btn-sm ms-1" onclick='abrirModalReporte(${JSON.stringify(JSON.stringify(item))})'><i class="fas fa-flag me-1"></i>Reportar</button>`;
+                }
+
+                // Si es ADMIN, tiene control de estado y borrado
                 if (rolActual === 'admin') {
                     const op = item.estado === 'HABILITADO' ? 'SUSPENDIDO' : 'HABILITADO';
                     const btnColor = item.estado === 'HABILITADO' ? 'btn-outline-danger' : 'btn-outline-success';
                     botones += ` <button class="btn ${btnColor} btn-sm ms-1" onclick="cambiarEstadoPrensa('${item.id}', '${op}')">${op === 'SUSPENDIDO' ? 'Sancionar' : 'Habilitar'}</button>`;
-                    botones += ` <button class="btn btn-danger btn-sm ms-1" onclick="eliminarPrensa('${item.id}', '${item.nombre}')" title="Eliminar registro"><i class="fas fa-trash-alt"></i></button>`;
+                    botones += ` <button class="btn btn-danger btn-sm ms-1" onclick="eliminarPrensa('${item.id}', '${item.nombre}')" title="Eliminar"><i class="fas fa-trash-alt"></i></button>`;
                 }
+
+                const estadoTexto = item.estado === 'SUSPENDIDO' && item.sancionDetalle ? `${item.estado}<br><small style="font-size:10px">${item.sancionDetalle}</small>` : item.estado;
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><img src="${escudoPath}" width="35" height="35" class="object-fit-contain" onerror="this.src='escudos/LIGA A COLOR.png'"></td>
+                    <td><img src="${escudoPath}" width="35" height="35" class="object-fit-contain" onerror="this.src='escudos/LIGA BLANCO.png'"></td>
                     <td class="fw-bold">${item.nombre}</td>
                     <td>${item.dni}</td>
                     <td><span class="badge bg-info text-dark">${item.rol || 'Prensa'}</span></td>
                     <td>${item.club}</td>
-                    <td><span class="badge ${badgeClase} px-2 py-1">${item.estado}</span></td>
+                    <td><span class="badge ${badgeClase} px-2 py-1">${estadoTexto}</span></td>
                     <td>${botones}</td>
                 `;
                 tbody.appendChild(tr);
@@ -592,7 +618,6 @@
         }
 
         function verCarnetQR(item) {
-            // Filtrar registros del mismo club y calcular orden cronológico exacto
             const delMismoClub = listaPrensaGlobal.filter(p => p.club === item.club);
             const indexEnClub = delMismoClub.findIndex(p => p.id === item.id);
             const nroOrden = String(indexEnClub !== -1 ? indexEnClub + 1 : 1).padStart(3, '0');
@@ -601,8 +626,7 @@
             document.getElementById('carnetDni').textContent = item.dni;
             document.getElementById('lblNumeroFrente').textContent = nroOrden;
             document.getElementById('lblNumeroDorso').textContent = nroOrden;
-            
-            document.getElementById('carnetFoto').src = item.foto || 'https://via.placeholder.com/150';
+            document.getElementById('carnetFoto').src = item.foto || 'escudos/LIGA BLANCO.png';
 
             const escudoPath = obtenerEscudoRuta(item.club);
             document.getElementById('imgEscudoFrente').src = escudoPath;
@@ -610,12 +634,9 @@
 
             const container = document.getElementById('qrcodeContainer');
             container.innerHTML = '';
-
-            const urlValidacion = `http://localhost/prensaliga/verificar.php?dni=${item.dni}&nombre=${encodeURIComponent(item.nombre)}`;
             new QRCode(container, {
-                text: urlValidacion,
-                width: 75,
-                height: 75
+                text: `http://localhost/prensaliga/verificar.php?dni=${item.dni}&nombre=${encodeURIComponent(item.nombre)}`,
+                width: 75, height: 75
             });
 
             new bootstrap.Modal(document.getElementById('modalCredencial')).show();
